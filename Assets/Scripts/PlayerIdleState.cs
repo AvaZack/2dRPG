@@ -9,6 +9,7 @@ public class PlayerIdleState : PlayerGroundedState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("enter idle");
     }
 
     public override void Exit()

@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerGroundedState : PlayerCanControlState
 {
+    public bool isEverGrounded {  get; private set; }
     public PlayerGroundedState(Player player, PlayerStateMachine stateMachine, string stateName) : base(player, stateMachine, stateName)
     {
     }
@@ -11,6 +12,7 @@ public class PlayerGroundedState : PlayerCanControlState
         base.Enter();
         // Clear velocity when grounded.
         player.SetVelocityX(0);
+        isEverGrounded = false;
     }
 
     public override void Exit()
@@ -22,15 +24,27 @@ public class PlayerGroundedState : PlayerCanControlState
     {
         base.Update();
 
-        if (Input.GetKeyDown(KeyCode.Space) && player.isGrounded) // Check grounded again cause..
+        if (Input.GetKeyDown(KeyPad.jump)) // Check grounded again cause..
         {
-            player.SetVelocityY(player.jumpForce);
-            TransitionTo(player.airState);
+            TransitionTo(player.jumpState);
+            return;
         }
 
-        if (!player.isGrounded) 
-        { 
+        if (Input.GetKeyDown(KeyPad.attack))
+        {
+            TransitionTo(player.attackState);
+            return;
+        }
+
+        // Detect effects only if we have really grounded.
+        if (!player.IsGrounded() && isEverGrounded) 
+        {
             TransitionTo(player.airState);
+            return;
+        }
+        if (!player.IsGrounded())
+        {
+            isEverGrounded = true;
         }
     }
 }

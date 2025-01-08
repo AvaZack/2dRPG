@@ -6,25 +6,29 @@ public class Player : Character
     #region States
     public PlayerStateMachine stateMachine { get; private set; }
     public PlayerIdleState idleState { get; private set; }
-    public PlayerMoveState moveState { get; private set; }
+    public PlayerMoveState moveState { get; private set; } 
     public PlayerAirState airState { get; private set; }
+    public PlayerJumpState jumpState { get; private set; }
     public PlayerDashState dashState { get; private set; }
     public PlayerAttackState attackState { get; private set; }
     public PlayerWallSlideState wallSlideState { get; private set; }
+    public PlayerWallJumpState wallJumpState { get; private set; }
     #endregion
     #region Components
     public Animator animator { get; private set; }
     public Rigidbody2D rb { get; private set; }
     #endregion
-
-    [Header("PlayerMoveInfo")]
-    [SerializeField] public float wallSlideSpeed;
-    [SerializeField] public float dashSpeed;
-
     #region CoolDowns
-    public float dashCoolDown { get; private set; } = 1.5f;
+    public float dashCoolDown { get; private set; } = .5f;
     public float dashCoolDownTimer { get; private set; } = 0;
     #endregion
+
+    [Header("PlayerMoveInfo")]
+    [SerializeField] public float dashSpeed;
+    [SerializeField] public float defaultGravity;
+    [SerializeField] public float maxJumpTime;
+    [SerializeField] public float maxAirJumpTime;
+
     private void Awake()
     {
         // Init components first.
@@ -35,9 +39,11 @@ public class Player : Character
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
         moveState = new PlayerMoveState(this, stateMachine, "Move");
         airState = new PlayerAirState(this, stateMachine, "Air");
+        jumpState = new PlayerJumpState(this, stateMachine, "Air");
         dashState = new PlayerDashState(this, stateMachine, "Dash");
         attackState = new PlayerAttackState(this, stateMachine, "Attack");
         wallSlideState = new PlayerWallSlideState(this, stateMachine, "WallSlide");
+        wallJumpState = new PlayerWallJumpState(this, stateMachine, "Air");
 
         stateMachine.Init(idleState);
     }
@@ -46,6 +52,7 @@ public class Player : Character
     protected override void Start()
     {
         base.Start();
+        CancelFloat();
     }
 
     // Update is called once per frame
@@ -53,7 +60,7 @@ public class Player : Character
     {
         base.Update();
         stateMachine.curState.Update();
-        CoolDownTimer();
+        Timer();
     }
 
     public Rigidbody2D GetRb()
@@ -92,7 +99,7 @@ public class Player : Character
         return rb.linearVelocityY;
     }
 
-    private void CoolDownTimer()
+    private void Timer()
     {
         dashCoolDownTimer += Time.deltaTime;
     }
@@ -100,6 +107,17 @@ public class Player : Character
     public void ResetDashCoolDown()
     {
         dashCoolDownTimer = 0;
+    }
+
+    public void Float() {
+        Debug.Log("Clear gravity scale.");
+        rb.gravityScale = 0;
+    }
+
+    public void CancelFloat()
+    {
+        Debug.Log("Set gravity scale to =" + defaultGravity);
+        rb.gravityScale = defaultGravity;
     }
 
 }

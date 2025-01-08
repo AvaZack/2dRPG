@@ -13,6 +13,7 @@ public class PlayerStateMachine
         if (!isInited) 
         {
             this.curState = state;
+            this.lastState = state;
             this.curState.Enter();
         } else
         {

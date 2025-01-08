@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerAirState : PlayerCanControlState
 {
+
+    public bool isEverInTheAir {  get; private set; }
     public PlayerAirState(Player player, PlayerStateMachine stateMachine, string stateName) : base(player, stateMachine, stateName)
     {
     }
@@ -9,6 +11,7 @@ public class PlayerAirState : PlayerCanControlState
     public override void Enter()
     {
         base.Enter();
+        isEverInTheAir = false;
     }
 
     public override void Exit()
@@ -20,17 +23,29 @@ public class PlayerAirState : PlayerCanControlState
     {
         base.Update();
         player.animator.SetFloat("yVelocity", player.GetVelocityY());
-        if (player.isGrounded)
+
+        // Only transition to wall slide when has xInput in the air.
+        if (player.IsWallHit() && xInput == player.facingDir)
+        {
+            TransitionTo(player.wallSlideState);
+            return;
+        }
+
+        // For air jump
+        if (Input.GetKeyDown(KeyPad.jump)) 
+        {
+            // Air jump;
+        }
+
+        // Detect effects only if we have really in the air.
+        if (player.IsGrounded() && isEverInTheAir)
         {
             TransitionTo(player.idleState);
             return;
         }
-
-        // Only transition to wall slide when has xInput
-        if (player.isWallHit && xInput == player.facingDir)
+        if (!player.IsGrounded())
         {
-            TransitionTo(player.wallSlideState);
-            return;
+            isEverInTheAir = true;
         }
     }
 }

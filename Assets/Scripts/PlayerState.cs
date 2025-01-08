@@ -10,6 +10,9 @@ public class PlayerState
     public float xInput { get; private set; }
     public float yInput { get; private set; }
 
+    public bool isAnimationEnd {  get; private set; }
+    public float stateTimer {  get; private set; }
+
 
     public PlayerState(Player player, PlayerStateMachine stateMachine, string stateName)
     {
@@ -20,17 +23,20 @@ public class PlayerState
 
     public virtual void Enter()
     {
-        Debug.Log(stateName + " Enter");
+        //Debug.Log(stateName + " Enter from " + stateMachine.lastState.stateName);
         player.animator.SetBool(stateName, true);
+        isAnimationEnd = false;
+        stateTimer = 0;
     }
 
     public virtual void Update()
     {
-        Debug.Log(stateName + " Update");
+        //Debug.Log(stateName + " Update");
+        stateTimer += Time.deltaTime;
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(KeyCode.LeftShift) && player.dashCoolDownTimer > player.dashCoolDown)
+        if (Input.GetKeyDown(KeyPad.dash) && player.dashCoolDownTimer > player.dashCoolDown)
         {
             TransitionTo(player.dashState);
         }
@@ -38,7 +44,8 @@ public class PlayerState
 
     public virtual void Exit()
     {
-        Debug.Log(stateName + " Exit");
+        //Debug.Log(stateName + " Exit");
+        Debug.Log("state last =" + stateTimer + "s");
         player.animator.SetBool(stateName, false);
     }
 
@@ -47,10 +54,8 @@ public class PlayerState
         stateMachine.TransitionTo(newState);
     }
 
-    // Imp
-    protected virtual void DashAction()
+    public void AnimationEnd()
     {
-
+        isAnimationEnd = true;
     }
-
 }

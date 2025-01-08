@@ -20,7 +20,7 @@ public class PlayerWallSlideState : PlayerState
     public override void Update()
     {
         base.Update();
-        if (player.isGrounded) 
+        if (player.IsGrounded()) 
         {
             if (xInput == 0)
                 TransitionTo(player.idleState);
@@ -29,7 +29,7 @@ public class PlayerWallSlideState : PlayerState
             return;
         }
 
-        if (!player.isWallHit)
+        if (!player.IsWallHit())
         {
             TransitionTo(player.airState);
             return;
@@ -37,11 +37,9 @@ public class PlayerWallSlideState : PlayerState
 
         player.SetVelocityY(player.GetVelocityY() * 0.95f);
 
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyPad.jump))
         {
-            player.SetVelocity(player.facingDir * player.moveSpeed * -1, player.jumpForce);
-            Debug.Log(player.GetVelocityX());
-            Debug.Log(player.GetVelocityY());
+            TransitionTo(player.wallJumpState);
         }
     }
 }

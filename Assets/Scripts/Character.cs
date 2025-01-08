@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class Character : MonoBehaviour
 {
-    public bool isGrounded { get; private set; }
-    public bool isWallHit { get; private set; }
 
     public int facingDir { get; private set; } = 1;
     public bool facingRight { get; private set; } = true;
@@ -26,7 +24,6 @@ public class Character : MonoBehaviour
 
     protected virtual void Update()
     {
-        CollisionCheck();
     }
 
     private void OnDrawGizmos()
@@ -42,9 +39,14 @@ public class Character : MonoBehaviour
         facingRight = !facingRight;
     }
 
-    private void CollisionCheck()
+
+    public bool IsGrounded()
     {
-        isGrounded = Physics2D.Raycast(groundChecker.position, Vector2.down, groundCheckDist, groundCheckLayer);
-        isWallHit = Physics2D.Raycast(wallChecker.position, Vector2.right, wallCheckDist * facingDir, groundCheckLayer);
+        return Physics2D.Raycast(groundChecker.position, Vector2.down, groundCheckDist, groundCheckLayer); ;
+    }
+
+    public bool IsWallHit()
+    {
+        return Physics2D.Raycast(wallChecker.position, Vector2.right, wallCheckDist * facingDir, groundCheckLayer);
     }
 }
