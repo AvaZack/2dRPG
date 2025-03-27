@@ -11,11 +11,11 @@ public class Character : MonoBehaviour
     [SerializeField] public float jumpForce;
 
     [Header("CollisionInfo")]
-    [SerializeField] private Transform groundChecker;
-    [SerializeField] private float groundCheckDist;
-    [SerializeField] private LayerMask groundCheckLayer;
-    [SerializeField] private Transform wallChecker;
-    [SerializeField] private float wallCheckDist;
+    [SerializeField] public Transform groundChecker;
+    [SerializeField] public float groundCheckDist;
+    [SerializeField] public LayerMask groundCheckLayer;
+    [SerializeField] public Transform wallChecker;
+    [SerializeField] public float wallCheckDist;
 
     protected virtual void Start()
     {
@@ -26,7 +26,7 @@ public class Character : MonoBehaviour
     {
     }
 
-    private void OnDrawGizmos()
+    protected virtual void OnDrawGizmos()
     {
         Gizmos.DrawLine(groundChecker.position, new Vector3(groundChecker.position.x, groundChecker.position.y - groundCheckDist));
         Gizmos.DrawLine(wallChecker.position, new Vector3(wallChecker.position.x + wallCheckDist, wallChecker.position.y));
@@ -49,4 +49,5 @@ public class Character : MonoBehaviour
     {
         return Physics2D.Raycast(wallChecker.position, Vector2.right, wallCheckDist * facingDir, groundCheckLayer);
     }
+
 }
